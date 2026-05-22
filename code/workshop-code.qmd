@@ -301,12 +301,7 @@ Treatment influences plant mass.
  - The `water_treatmentWell watered`: model prediction for the difference in Lotus scoparius mass between well watered and drought stressed treatments.
  - `species_namePenstemon centranthifolius`: difference between Penstemon mass in well watered treatments and the Lotus scoparius mass in the well watered treatment. 
  - `species_nameEschscholzia californica`: difference between the Eschscholzia californica mass in well watered treatment and the Lotus scoparius mass in the well watered treatment. 
- 
- 
- 
- 
- 
- 
+
 # 4. Model predictions
 
 Insert code to generate model predictions for the best model.  
@@ -315,6 +310,12 @@ Rename the `x` column and `group` column to match the original data frame (`drou
 
 Look at the object before plotting.
 ```{r}
+#| label: model-predictions
+
+preds <- ggpredict(model4, terms = c("water_treatment", "species_name")) |> # predictors and model object
+rename(water_treatment = x, species_name = group
+      )
+
 
 ```
 
@@ -323,7 +324,16 @@ Look at the object before plotting.
 # 5. Final figure
 
 Create a clean, publication ready figure depicting predictions for the best model and the underlying data.
+```{r}
+#| label: final figure
 
+ggplot(data = drought_exp_clean, mapping = aes(x = water_treatment, y = total_g, color = water_treatment)) + 
+  geom_jitter(height = 0, width = 0.1, alpha = 0.4, shape = 21) +
+  geom_pointrange(data = preds, mapping = aes(x = water_treatment, y = predicted, ymin = conf.low, ymax = conf.high)) +
+  facet_wrap(~ species_name) + 
+  scale_color_manual(values = c("Drought stressed" = ds_col, "Well watered" = ww_col)) + 
+  theme(legend.position = "none") + labs(x = "Treatment", y = "Total Mass(g)")
+```
 
 # 6. Writing
 
